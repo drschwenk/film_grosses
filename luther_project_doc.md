@@ -15,4 +15,6 @@ I will start with the Top Series Movies (Trilogy, tetralogy, etc.) list generate
 Consistency of cast and creatives over the series of movies.
 Length of time between individual movies.
 Genre
+Success of first film
+Critical reception
 
