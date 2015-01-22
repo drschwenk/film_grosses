@@ -12,7 +12,8 @@ def getval(soup, fieldname):
 	'''Function finds and returns next sibling of the string given in fieldname
 	'''
 	obj = soup.find(text = re.compile(fieldname))
-	if not obj: return None
+	if not obj:
+		return None
 	next_sibling = obj.findNextSibling()
 
 	if next_sibling: return next_sibling.text
@@ -34,12 +35,18 @@ def make_movie_data(url):
 	'''
 	def to_date(datestring):
 		'''Helper function to parse and return date object for the movies release date'''
-		date = dateutil.parser.parse(datestring).date()
+		try:
+			date = dateutil.parser.parse(datestring).date()
+		except:
+			print "date error"
 		return date
 
 	def money_to_int(moneystring):
 		'''Helper function to parse and return the gross domestic return on the movie '''
-		moneystring = int(moneystring.replace('$', '').replace(',',''))
+		try:
+			moneystring = int(moneystring.replace('$', '').replace(',',''))
+		except AttributeError:
+			moneystring = 0
 		return moneystring
 
 	def runtime_to_minutes(runtimestring):
@@ -63,7 +70,7 @@ def make_movie_data(url):
 	raw_rel_date = getval(soup, 'Release Date')
 	rel_date = to_date(raw_rel_date)
 
-	raw_runtime = getval(soup, "Runtime")
+	raw_runtime = getval(soup, 'Runtime')
 	runtime = runtime_to_minutes(raw_runtime)
 
 	raw_gross = getval(soup, 'Domestic Total')
@@ -87,6 +94,22 @@ def make_movie_data(url):
 	movie_data.append(movie_dict)
 	return movie_dict
 
+def make_complete_movie_dataset(franchise_url_list):
+	'''Takes dictionary of franchise url and returns a flattened list of all
+	movies in the dataset. It also adds a franchise property to the data to preserve this information
+	 This prepares the data for a pandas dataframe.
+	'''
+	complete_data_list= []
+
+	for franchise, urls in franchise_url_list.iteritems():
+		franchise_data = make_series_data(urls)
+		for movie in franchise_data:
+			movie["franchise"] = franchise
+			complete_data_list.append(movie)
+
+	return complete_data_list
+
+
 def makeplot_grosses(movie_list):
 	'''Generates and returns line plot of the gross returns over the
 	  course of a series
@@ -95,3 +118,5 @@ def makeplot_grosses(movie_list):
 	grosses = [int(movie['domestic_total_gross'])/1000000 for movie in movie_list]
 	grossplot=plt.plot(indices, grosses);
 	return grossplot
+
+
