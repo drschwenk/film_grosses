@@ -37,9 +37,11 @@ def make_movie_data(url):
 		'''Helper function to parse and return date object for the movies release date'''
 		try:
 			date = dateutil.parser.parse(datestring).date()
+			return date
+
 		except:
 			print "date error"
-		return date
+			return None
 
 	def money_to_int(moneystring):
 		'''Helper function to parse and return the gross domestic return on the movie '''
@@ -77,7 +79,7 @@ def make_movie_data(url):
 	gross = money_to_int(raw_gross)
 
 	rating = strip_unicode(getval(soup, 'MPAA Rating'))
-
+	#TODO add- genre, budget, awards, Distributor, cast (later from IMDB)
 	headers = ['title',
            'domestic_total_gross',
            'release_date',
