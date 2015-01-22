@@ -1,7 +1,12 @@
 __author__ = 'schwenk'
 
-from box_mojo import *
+# from box_mojo import *
 from collections import defaultdict
+from bs4 import BeautifulSoup
+import urllib2
+import re
+import dateutil.parser
+import pylab
 
 
 def strip_unicode(string):
@@ -29,7 +34,7 @@ def build_movie_url_list(franchise_list):
 	url_base = "http://boxofficemojo.com"
 
 	franchise_url_dict = defaultdict(list)
-	for franchise in franchiseslist:
+	for franchise in franchise_list:
 
 		page = urllib2.urlopen(franchise)
 		soup = BeautifulSoup(page)
@@ -50,10 +55,8 @@ def build_movie_url_list(franchise_list):
 
 	return franchise_url_dict
 
-franchiseslist = build_franchise_chart_urls()
-movie_urls = build_movie_url_list(franchiseslist)
+def test_function():
+	print "itworked"
 
-print movie_urls
-for k,v in movie_urls.iteritems():
-	for link in v:
-		print k, link
+# franchiseslist = build_franchise_chart_urls()
+# movie_urls = build_movie_url_list(franchiseslist)
