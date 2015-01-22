@@ -19,15 +19,12 @@ def getval(soup, fieldname):
 	else: return None
 
 def make_series_data(url_list):
-	'''This Function takes a list of movies and generates
-	a url for the inflation adjusted webpage on boxofficemojo.
-	It then builds a list of movie data dictionaries and returns it.
-
+	'''This Function takes a list of movie urls and calls the make movie_data function on each movie.
+	It returns a list of movie data dictionaries for a particular film series.
 	'''
 	movie_data=[]
 	for url in url_list:
 		movie_data.append(make_movie_data(url))
-
 	return movie_data
 
 def make_movie_data(url):

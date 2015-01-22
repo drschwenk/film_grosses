@@ -14,6 +14,9 @@ def strip_unicode(string):
 	return string.decode('unicode_escape').encode('ascii','ignore')
 
 def build_franchise_chart_urls():
+	'''Parses the franchises page on boxofficemojo.com and returns
+	a list of the urls pointing to the individual franchise chart pages.
+	'''
 	url_base = "http://boxofficemojo.com/franchises/"
 	page = urllib2.urlopen(url_base)
 	soup = BeautifulSoup(page)
@@ -31,6 +34,10 @@ def build_franchise_chart_urls():
 	return chart_urls
 
 def build_movie_url_list(franchise_list):
+	'''Takes a list containing urls for a particular franchise chart page, parses it, and returns a
+	dictionary of the form {(franchise name):[movies in that franchise]},
+	where the movies franchise value is a list of urls pointing to the individual pages for that franchise
+	'''
 	url_base = "http://boxofficemojo.com"
 	adjust_gross_url = "&adjust_yr=2015&p="+"htm"
 
