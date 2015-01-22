@@ -32,10 +32,10 @@ def build_franchise_chart_urls():
 
 def build_movie_url_list(franchise_list):
 	url_base = "http://boxofficemojo.com"
+	adjust_gross_url = "&adjust_yr=2015&p="+"htm"
 
 	franchise_url_dict = defaultdict(list)
 	for franchise in franchise_list:
-
 		page = urllib2.urlopen(franchise)
 		soup = BeautifulSoup(page)
 		movie_title =soup.find_all("b")
@@ -43,8 +43,8 @@ def build_movie_url_list(franchise_list):
 		for title in movie_title:
 			parent = title.parent
 			try:
-				new_url = url_base + parent['href']
-				if new_url not in title_list:
+				new_url = url_base + parent['href'] +adjust_gross_url
+				if new_url not in title_list and parent['href']:
 					title_list.append(new_url)
 			except KeyError:
 				pass
@@ -55,8 +55,3 @@ def build_movie_url_list(franchise_list):
 
 	return franchise_url_dict
 
-def test_function():
-	print "itworked"
-
-# franchiseslist = build_franchise_chart_urls()
-# movie_urls = build_movie_url_list(franchiseslist)
