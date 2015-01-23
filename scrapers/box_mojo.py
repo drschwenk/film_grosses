@@ -38,20 +38,13 @@ def make_movie_data(url):
 	returns a dictionary containing the following properties:
 	'title','domestic_total_gross','release_date','runtime_mins','rating']
 	'''
-
-	# properties = ['title',
-     #       'domestic_total_gross',
-     #       'release_date',
-     #       'runtime_mins',
-     #       'rating',
-     #       'budget']
 	#TODO add- genre, budget, awards, Distributor, cast (later from IMDB)
-
 	properties = ['title',
-           'domestic_total_gross',
-           'release_date',
-           'runtime',
-           'rating']
+                  'domestic_total_gross',
+                  'release_date',
+                  'runtime_mins',
+                  'rating',
+                  'budget']
 
 	property_list = []
 
@@ -93,14 +86,16 @@ def make_movie_data(url):
 				property_list.append(rating)
 			except:
 				property_list.append(None)
-		# elif property =='budget':
-		# 	raw_budget =getval(soup, 'Production Budget')
-		# 	if raw_budget == 'N/A':
-		# 			property_list.append(0)
-		# 	else:
-		# 		budget = strip_unicode(raw_budget.split()[0])
-		# 		budget_in_dollars = int(budget.split('$')[1])*10**6
-		# 		property_list.append(budget_in_dollars)
+		elif property =='budget':
+			raw_budget =getval(soup, 'Production Budget')
+			try:
+				budget = strip_unicode(raw_budget.split()[0])
+				budget_in_dollars = float(budget.split('$')[1])*10**6
+				property_list.append(budget_in_dollars)
+			except:
+				property_list.append(None)
+
+
 		else:
 			property_list.append(None)
 

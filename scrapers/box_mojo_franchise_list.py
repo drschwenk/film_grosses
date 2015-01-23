@@ -1,6 +1,6 @@
 __author__ = 'schwenk'
 
-# from box_mojo import *
+from box_mojo import strip_unicode
 from collections import defaultdict
 from bs4 import BeautifulSoup
 import urllib2
@@ -9,9 +9,9 @@ import dateutil.parser
 import pylab
 
 
-def strip_unicode(string):
-	'''Helper function to strip unicode characters from the data strings stored in the data dictionary'''
-	return string.decode('unicode_escape').encode('ascii','ignore')
+# def strip_unicode(string):
+# 	'''Helper function to strip unicode characters from the data strings stored in the data dictionary'''
+# 	return string.decode('unicode_escape').encode('ascii','ignore')
 
 def build_franchise_chart_urls():
 	'''Parses the franchises page on boxofficemojo.com and returns
