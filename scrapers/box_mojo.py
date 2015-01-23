@@ -16,8 +16,13 @@ def getval(soup, fieldname):
 		return None
 	next_sibling = obj.findNextSibling()
 
-	if next_sibling: return next_sibling.text
-	else: return None
+	if next_sibling:
+		return next_sibling.text
+	else:
+		return None
+def strip_unicode(string):
+	'''Helper function to strip unicode characters from the data strings stored in the data dictionary'''
+	return string.decode('unicode_escape').encode('ascii','ignore')
 
 def make_series_data(url_list):
 	'''This Function takes a list of movie urls and calls the make movie_data function on each movie.
@@ -33,67 +38,80 @@ def make_movie_data(url):
 	returns a dictionary containing the following properties:
 	'title','domestic_total_gross','release_date','runtime_mins','rating']
 	'''
-	def to_date(datestring):
-		'''Helper function to parse and return date object for the movies release date'''
-		try:
-			date = dateutil.parser.parse(datestring).date()
-			return date
 
-		except:
-			print "date error"
-			return None
+	# properties = ['title',
+     #       'domestic_total_gross',
+     #       'release_date',
+     #       'runtime_mins',
+     #       'rating',
+     #       'budget']
+	#TODO add- genre, budget, awards, Distributor, cast (later from IMDB)
 
-	def money_to_int(moneystring):
-		'''Helper function to parse and return the gross domestic return on the movie '''
-		try:
-			moneystring = int(moneystring.replace('$', '').replace(',',''))
-		except AttributeError:
-			moneystring = 0
-		return moneystring
+	properties = ['title',
+           'domestic_total_gross',
+           'release_date',
+           'runtime',
+           'rating']
 
-	def runtime_to_minutes(runtimestring):
-		'''Helper function to parse and return the runtime of a movie'''
-		runtime = runtimestring.split()
-		try:
-			minutes = int(runtime[0])*60 + int(runtime[2])
-			return str(minutes)
-		except: return None
+	property_list = []
 
-	def strip_unicode(string):
-		'''Helper function to strip unicode characters from the data strings stored in the data dictionary'''
-		return string.decode('unicode_escape').encode('ascii','ignore')
+	def process_property(property):
+		'''This function takes a property from the list of properties and
+		finds the corresponding value in the bs representation of a webpage.
+		The property is processed and formatted for numerical work in pandas.
+		'''
+
+		if property == 'title':
+			title_string = soup.find('title').text
+			title = strip_unicode(title_string.split('(')[0].strip())
+			property_list.append(title)
+		elif property == 'domestic_total_gross':
+			raw_gross = getval(soup, 'Domestic Total')
+			try:
+				moneystring = int(raw_gross.replace('$', '').replace(',',''))
+				property_list.append(moneystring)
+			except AttributeError:
+				property_list.append(None)
+		elif property == 'release_date':
+			raw_rel_date = getval(soup, 'Release Date')
+			try:
+				date = dateutil.parser.parse(raw_rel_date).date()
+				property_list.append(date)
+			except:
+				property_list.append(None)
+		elif property == 'runtime':
+			raw_runtime = getval(soup, 'Runtime')
+			runtime = raw_runtime.split()
+			try:
+				minutes = int(runtime[0])*60 + int(runtime[2])
+				property_list.append(minutes)
+			except:
+				property_list.append(None)
+		elif property == 'rating':
+			try:
+				rating = strip_unicode(getval(soup, 'MPAA Rating'))
+				property_list.append(rating)
+			except:
+				property_list.append(None)
+		# elif property =='budget':
+		# 	raw_budget =getval(soup, 'Production Budget')
+		# 	if raw_budget == 'N/A':
+		# 			property_list.append(0)
+		# 	else:
+		# 		budget = strip_unicode(raw_budget.split()[0])
+		# 		budget_in_dollars = int(budget.split('$')[1])*10**6
+		# 		property_list.append(budget_in_dollars)
+		else:
+			property_list.append(None)
 
 	page = urllib2.urlopen(url)
 	soup = BeautifulSoup(page)
 
-	title_string = soup.find('title').text
-	title = strip_unicode(title_string.split('(')[0].strip())
+	for property in properties:
+		process_property(property)
 
-	raw_rel_date = getval(soup, 'Release Date')
-	rel_date = to_date(raw_rel_date)
+	movie_dict = dict(zip(properties, property_list))
 
-	raw_runtime = getval(soup, 'Runtime')
-	runtime = runtime_to_minutes(raw_runtime)
-
-	raw_gross = getval(soup, 'Domestic Total')
-	gross = money_to_int(raw_gross)
-
-	rating = strip_unicode(getval(soup, 'MPAA Rating'))
-	#TODO add- genre, budget, awards, Distributor, cast (later from IMDB)
-	headers = ['title',
-           'domestic_total_gross',
-           'release_date',
-           'runtime_mins',
-           'rating']
-
-	movie_data = []
-	movie_dict = dict(zip(headers, [title,
-	                           gross,
-	                           rel_date,
-	                           runtime,
-	                           rating]))
-
-	movie_data.append(movie_dict)
 	return movie_dict
 
 def make_complete_movie_dataset(franchise_url_list):
@@ -120,5 +138,3 @@ def makeplot_grosses(movie_list):
 	grosses = [int(movie['domestic_total_gross'])/1000000 for movie in movie_list]
 	grossplot=plt.plot(indices, grosses);
 	return grossplot
-
-
