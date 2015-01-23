@@ -42,7 +42,7 @@ def make_movie_data(url):
 	properties = ['title',
                   'domestic_total_gross',
                   'release_date',
-                  'runtime_mins',
+                  'runtime',
                   'rating',
                   'budget',
                   'genre',
@@ -66,7 +66,7 @@ def make_movie_data(url):
 				moneystring = int(raw_gross.replace('$', '').replace(',',''))
 				property_list.append(moneystring)
 			except AttributeError:
-				property_list.append(None)
+				property_list.append(0)
 		elif property == 'release_date':
 			raw_rel_date = getval(soup, 'Release Date')
 			try:
@@ -116,9 +116,9 @@ def make_movie_data(url):
 				if soup.find(text = re.compile('Academy Awards')):
 					property_list.append(1)
 				else:
-					property_list.append(None)
+					property_list.append(0)
 			except:
-				property_list.append(None)
+				property_list.append(0)
 		# elif property == '':
 		# 	try:
 		# 		raw_ = getval(soup, '')
