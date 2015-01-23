@@ -38,14 +38,16 @@ def make_movie_data(url):
 	returns a dictionary containing the following properties:
 	'title','domestic_total_gross','release_date','runtime_mins','rating']
 	'''
-	#TODO add- genre, budget, awards, Distributor, cast (later from IMDB)
+	#TODO add- cast (later from IMDB)
 	properties = ['title',
                   'domestic_total_gross',
                   'release_date',
                   'runtime_mins',
                   'rating',
-                  'budget']
-
+                  'budget',
+                  'genre',
+                  'distrib',
+                  'oscars']
 	property_list = []
 
 	def process_property(property):
@@ -94,8 +96,35 @@ def make_movie_data(url):
 				property_list.append(budget_in_dollars)
 			except:
 				property_list.append(None)
+		elif property == 'genre':
+			try:
+				raw_genre = getval(soup, 'Genre:')
+				genre = strip_unicode(raw_genre)
+				property_list.append(genre)
+			except:
+				property_list.append(None)
 
+		elif property == 'distrib':
+			try:
+				raw_ = getval(soup,'Distributor: ')
+				property_list.append()
+			except:
+				property_list.append(None)
 
+		elif property == 'oscars':
+			try:
+				if soup.find(text = re.compile('Academy Awards')):
+					property_list.append(1)
+				else:
+					property_list.append(None)
+			except:
+				property_list.append(None)
+		# elif property == '':
+		# 	try:
+		# 		raw_ = getval(soup, '')
+		# 		property_list.append()
+		# 	except:
+		# 		property_list.append(None)
 		else:
 			property_list.append(None)
 
@@ -115,7 +144,6 @@ def make_complete_movie_dataset(franchise_url_list):
 	 This prepares the data for a pandas dataframe.
 	'''
 	complete_data_list= []
-
 	for franchise, urls in franchise_url_list.iteritems():
 		franchise_data = make_series_data(urls)
 		for movie in franchise_data:
@@ -133,3 +161,4 @@ def makeplot_grosses(movie_list):
 	grosses = [int(movie['domestic_total_gross'])/1000000 for movie in movie_list]
 	grossplot=plt.plot(indices, grosses);
 	return grossplot
+
