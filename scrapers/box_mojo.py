@@ -4,6 +4,7 @@ import re
 import dateutil.parser
 import pylab
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 
@@ -47,7 +48,8 @@ def make_movie_data(url):
                   'budget',
                   'genre',
                   'distrib',
-                  'oscars']
+                  'oscars',
+                  'director']
 	property_list = []
 
 	def process_property(property):
@@ -71,7 +73,8 @@ def make_movie_data(url):
 			raw_rel_date = getval(soup, 'Release Date')
 			try:
 				date = dateutil.parser.parse(raw_rel_date).date()
-				property_list.append(date)
+				date64 = np.datetime64(date)
+				property_list.append(date64)
 			except:
 				property_list.append(None)
 		elif property == 'runtime':
@@ -106,8 +109,9 @@ def make_movie_data(url):
 
 		elif property == 'distrib':
 			try:
-				raw_ = getval(soup,'Distributor: ')
-				property_list.append()
+				raw_Distrib = getval(soup,'Distributor: ')
+				dist = strip_unicode(raw_Distrib)
+				property_list.append(dist)
 			except:
 				property_list.append(None)
 
@@ -119,6 +123,14 @@ def make_movie_data(url):
 					property_list.append(0)
 			except:
 				property_list.append(0)
+		elif property == 'director':
+			try:
+				raw_direct = soup.find(text = re.compile('Director'))
+				director = strip_unicode(raw_direct.find_parent('tr').findNextSibling().text)
+				property_list.append(director)
+			except:
+				property_list.append(None)
+
 		# elif property == '':
 		# 	try:
 		# 		raw_ = getval(soup, '')

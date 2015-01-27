@@ -10,6 +10,17 @@ import dateutil
 import dateutil.parser
 from collections import defaultdict
 
+'''
+['title',
+			'domestic_total_gross',
+			'release_date',
+			'runtime',
+			'rating',
+			'budget',
+			'genre',
+			'distrib',
+			'oscars'
+'''
 
 with open("complete_data.pkl", 'r') as picklefile:
     complete_data_for_pandas = pickle.load(picklefile)
@@ -17,15 +28,44 @@ with open("complete_data.pkl", 'r') as picklefile:
 
 df = pd.DataFrame(complete_data_for_pandas)
 
-print df.head()
 
-# sortedbyruntime = df.sort(columns='Runtime')
-
-# releasedateplot = df.plot(x="ReleaseDate",y="DomesticTotalGross")
+# df['domestic_total_gross'].hist()
+# plt.title('Histogram of Movies by Box Office Revenues')
+# plt.xlabel('Box Office (Billions of Dollars)')
+# plt.ylabel('Number of Movies')
 # plt.show()
 
-# runtimeplot = sortedbyruntime.plot(x="Runtime",y="DomesticTotalGross")
+# df['budget'].hist()
+# plt.title('Histogram of Movies by Box Office Revenues')
+# plt.xlabel('budget (hundreds of milions of Dollars)')
+# plt.ylabel('Number of Movies')
 # plt.show()
+
+# import matplotlib.pyplot as plt
+# plt.scatter(df.budget, df.domestic_total_gross)
+# plt.title('How does budget relate to final box office revenue?\n')
+# plt.xlabel('Budget')
+# plt.ylabel('Box Office')
+# plt.show()
+
+
+
+
+sortedbyruntime = df.sort(columns='budget')
+# print sortedbyruntime.head()
+
+# releasedateplot = df.plot(x="release_date",y="domestic_total_gross")
+# plt.show()
+
+# runtimeplot = sortedbyruntime.scatter(x="release_date",y="domestic_total_gross")
+# plt.show()
+
+mydata = sortedbyruntime[["budget", "domestic_total_gross"]].dropna(how="any")
+# Now plot with matplotlib
+vals = mydata.values
+plt.scatter(vals[:, 0], vals[:, 1])
+plt.show()
+
 
 # summed_rating_groups = df.groupby('Rating').sum()
 # numberpercat = df.groupby('Rating').size()
