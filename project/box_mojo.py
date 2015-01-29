@@ -5,6 +5,7 @@ import dateutil.parser
 import pylab
 import matplotlib.pyplot as plt
 import numpy as np
+import unirest
 
 
 
@@ -49,7 +50,8 @@ def make_movie_data(url):
                   'genre',
                   'distrib',
                   'oscars',
-                  'director']
+                  'director',
+                  'metacritic']
 	property_list = []
 
 	def process_property(property):
@@ -78,7 +80,7 @@ def make_movie_data(url):
 			except:
 				property_list.append(None)
 		elif property == 'runtime':
-			
+
 			raw_runtime = getval(soup, 'Runtime')
 			runtime = raw_runtime.split()
 			try:
@@ -147,6 +149,34 @@ def make_movie_data(url):
 	for property in properties:
 		process_property(property)
 
+	def get_meta_score(movie):
+		'''Appends metacritic score to propertylist'''
+		response = unirest.post("https://byroredux-metacritic.p.mashape.com/search/movie",
+			headers={
+			"X-Mashape-Key": "qVfe61JdSVmshmeVf0gO3AWaVRnBp1oo7y7jsntrUZ1ORQbTjO",
+			"Content-Type": "application/x-www-form-urlencoded",
+			"Accept": "application/json"
+			},
+			params={
+			"max_pages": "2",
+			"retry": 2,
+			"title": movie
+			}
+		)
+		for film in response.body['results']:
+			date = dateutil.parser.parse(film['rlsdate']).date()
+			date64 = np.datetime64(date)
+			if date64 == property_list[2]:
+				return film['score']
+			else:
+				pass
+			return 1
+
+	try:
+		metascore = float(get_meta_score(property_list[0]))
+		property_list[-1] = metascore
+	except:
+		pass
 	movie_dict = dict(zip(properties, property_list))
 
 	return movie_dict
@@ -175,3 +205,4 @@ def makeplot_grosses(movie_list):
 	grossplot=plt.plot(indices, grosses);
 	return grossplot
 
+print make_movie_data('http://boxofficemojo.com/movies/?id=backtothefuture.htm')
