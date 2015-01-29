@@ -168,9 +168,7 @@ def make_movie_data(url):
 			date64 = np.datetime64(date)
 			if date64 == property_list[2]:
 				return film['score']
-			else:
-				pass
-			return 1
+
 
 	try:
 		metascore = float(get_meta_score(property_list[0]))
@@ -205,4 +203,4 @@ def makeplot_grosses(movie_list):
 	grossplot=plt.plot(indices, grosses);
 	return grossplot
 
-print make_movie_data('http://boxofficemojo.com/movies/?id=backtothefuture.htm')
+# print make_movie_data('http://boxofficemojo.com/movies/?id=howtotrainyourdragon.htm')
