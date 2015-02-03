@@ -199,7 +199,7 @@ def makeplot_grosses(movie_list):
 	  course of a series
 	'''
 	indices = [i for i in range(1,len(movie_list)+1)]
-	grosses = [int(movie['domestic_total_gross'])/1000000 for movie in movie_list]
+	grosses = [int(movie[3])/1000000 for movie in movie_list]
 	grossplot=plt.plot(indices, grosses);
 	return grossplot
 
