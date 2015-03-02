@@ -3,7 +3,7 @@ __author__ = 'schwenk'
 from box_mojo import strip_unicode
 from collections import defaultdict
 from bs4 import BeautifulSoup
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import re
 import dateutil.parser
 import pylab
@@ -18,7 +18,7 @@ def build_franchise_chart_urls():
 	a list of the urls pointing to the individual franchise chart pages.
 	'''
 	url_base = "http://boxofficemojo.com/franchises/"
-	page = urllib2.urlopen(url_base)
+	page = urllib.request.urlopen(url_base)
 	soup = BeautifulSoup(page)
 	tablelist=[]
 	franchise_titles = soup.find_all("b")
@@ -43,7 +43,7 @@ def build_movie_url_list(franchise_list):
 
 	franchise_url_dict = defaultdict(list)
 	for franchise in franchise_list:
-		page = urllib2.urlopen(franchise)
+		page = urllib.request.urlopen(franchise)
 		soup = BeautifulSoup(page)
 		movie_title =soup.find_all("b")
 		title_list =[]
