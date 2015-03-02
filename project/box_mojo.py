@@ -1,11 +1,11 @@
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from bs4 import BeautifulSoup
+import requests
 import re
 import dateutil.parser
 import pylab
 import matplotlib.pyplot as plt
 import numpy as np
-import unirest
 
 
 
@@ -24,7 +24,8 @@ def getval(soup, fieldname):
 		return None
 def strip_unicode(string):
 	'''Helper function to strip unicode characters from the data strings stored in the data dictionary'''
-	return string.decode('unicode_escape').encode('ascii','ignore')
+	# return string.decode('unicode_escape').encode('ascii','ignore')
+	return string
 
 def make_series_data(url_list):
 	'''This Function takes a list of movie urls and calls the make movie_data function on each movie.
@@ -143,7 +144,7 @@ def make_movie_data(url):
 		else:
 			property_list.append(None)
 
-	page = urllib2.urlopen(url)
+	page = urllib.request.urlopen(url)
 	soup = BeautifulSoup(page)
 
 	for property in properties:
@@ -151,7 +152,7 @@ def make_movie_data(url):
 
 	def get_meta_score(movie):
 		'''Appends metacritic score to propertylist'''
-		response = unirest.post("https://byroredux-metacritic.p.mashape.com/search/movie",
+		response = requests.post("https://byroredux-metacritic.p.mashape.com/search/movie",
 			headers={
 			"X-Mashape-Key": "qVfe61JdSVmshmeVf0gO3AWaVRnBp1oo7y7jsntrUZ1ORQbTjO",
 			"Content-Type": "application/x-www-form-urlencoded",
@@ -163,7 +164,7 @@ def make_movie_data(url):
 			"title": movie
 			}
 		)
-		for film in response.body['results']:
+		for film in response.json()['results']:
 			date = dateutil.parser.parse(film['rlsdate']).date()
 			date64 = np.datetime64(date)
 			if date64 == property_list[2]:
@@ -175,7 +176,7 @@ def make_movie_data(url):
 		property_list[-1] = metascore
 	except:
 		pass
-	movie_dict = dict(zip(properties, property_list))
+	movie_dict = dict(list(zip(properties, property_list)))
 
 	return movie_dict
 
@@ -185,7 +186,7 @@ def make_complete_movie_dataset(franchise_url_list):
 	 This prepares the data for a pandas dataframe.
 	'''
 	complete_data_list= []
-	for franchise, urls in franchise_url_list.iteritems():
+	for franchise, urls in franchise_url_list.items():
 		franchise_data = make_series_data(urls)
 		for movie in franchise_data:
 			movie["franchise"] = franchise
@@ -203,4 +204,4 @@ def makeplot_grosses(movie_list):
 	grossplot=plt.plot(indices, grosses);
 	return grossplot
 
-# print make_movie_data('http://boxofficemojo.com/movies/?id=howtotrainyourdragon.htm')
+# print(make_movie_data('http://boxofficemojo.com/movies/?id=austinpowers.htm'))
