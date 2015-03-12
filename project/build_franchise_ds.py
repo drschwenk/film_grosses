@@ -50,7 +50,8 @@ def build_movie_url_list(franchise_list):
 		for title in movie_title:
 			parent = title.parent
 			try:
-				new_url = url_base + parent['href'] +adjust_gross_url
+				new_url = url_base\
+				          ll+ parent['href'] +adjust_gross_url
 				if new_url not in title_list and parent['href']:
 					title_list.append(new_url)
 			except KeyError:
