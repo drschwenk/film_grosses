@@ -1,14 +1,11 @@
+__author__ = 'schwenk'
+
 import urllib.request, urllib.error, urllib.parse
 from bs4 import BeautifulSoup
 import requests
 import re
 import dateutil.parser
-import pylab
-import matplotlib.pyplot as plt
 import numpy as np
-
-
-
 
 def getval(soup, fieldname):
 	'''Function finds and returns next sibling of the string given in fieldname
@@ -22,10 +19,6 @@ def getval(soup, fieldname):
 		return next_sibling.text
 	else:
 		return None
-def strip_unicode(string):
-	'''Helper function to strip unicode characters from the data strings stored in the data dictionary'''
-	# return string.decode('unicode_escape').encode('ascii','ignore')
-	return string
 
 def make_series_data(url_list):
 	'''This Function takes a list of movie urls and calls the make movie_data function on each movie.
@@ -193,15 +186,3 @@ def make_complete_movie_dataset(franchise_url_list):
 			complete_data_list.append(movie)
 
 	return complete_data_list
-
-
-def makeplot_grosses(movie_list):
-	'''Generates and returns line plot of the gross returns over the
-	  course of a series
-	'''
-	indices = [i for i in range(1,len(movie_list)+1)]
-	grosses = [int(movie[3])/1000000 for movie in movie_list]
-	grossplot=plt.plot(indices, grosses);
-	return grossplot
-
-# print(make_movie_data('http://boxofficemojo.com/movies/?id=austinpowers.htm'))

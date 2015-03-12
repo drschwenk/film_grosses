@@ -1,17 +1,8 @@
 __author__ = 'schwenk'
 
-from box_mojo import strip_unicode
 from collections import defaultdict
 from bs4 import BeautifulSoup
 import urllib.request, urllib.error, urllib.parse
-import re
-import dateutil.parser
-import pylab
-
-
-# def strip_unicode(string):
-# 	'''Helper function to strip unicode characters from the data strings stored in the data dictionary'''
-# 	return string.decode('unicode_escape').encode('ascii','ignore')
 
 def build_franchise_chart_urls():
 	'''Parses the franchises page on boxofficemojo.com and returns
@@ -20,12 +11,12 @@ def build_franchise_chart_urls():
 	url_base = "http://boxofficemojo.com/franchises/"
 	page = urllib.request.urlopen(url_base)
 	soup = BeautifulSoup(page)
-	tablelist=[]
+	chart_titles=[]
 	franchise_titles = soup.find_all("b")
 
 	for franchise in franchise_titles:
-		tablelist.append(franchise.parent)
-	franchise_list = tablelist[3:-1]
+		chart_titles.append(franchise.parent)
+	franchise_list = chart_titles[3:-1]
 
 	chart_urls = []
 	for franchise in franchise_list:
@@ -50,8 +41,7 @@ def build_movie_url_list(franchise_list):
 		for title in movie_title:
 			parent = title.parent
 			try:
-				new_url = url_base\
-				          ll+ parent['href'] +adjust_gross_url
+				new_url = url_base+ parent['href'] +adjust_gross_url
 				if new_url not in title_list and parent['href']:
 					title_list.append(new_url)
 			except KeyError:
